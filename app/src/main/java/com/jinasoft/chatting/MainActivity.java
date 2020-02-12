@@ -34,22 +34,37 @@ import com.google.firebase.database.Query;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+
+
+    long now = System.currentTimeMillis();
+    Date date = new Date(now);
+    SimpleDateFormat sdfNOW = new SimpleDateFormat("HH:mm");
+    private String NOWDATE = sdfNOW.format(date);
+
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
 
 
         TextView tvName;
         TextView tvMessage;
+        TextView tvDate;
         ImageView imageView;
         CircleImageView Profile;
+
+
+
 
         public MessageViewHolder(View v){
             super(v);
                 tvName = itemView.findViewById(R.id.chat_tvName);
                 tvMessage = itemView.findViewById(R.id.chat_tvMessage);
                 imageView = itemView.findViewById(R.id.imageview);
+                tvDate = itemView.findViewById(R.id.chat_tvDate);
                 Profile = itemView.findViewById(R.id.chat_profile);
 
 
@@ -111,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     findViewById(R.id.chat_btnsend).setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View view){
-            ChatMessage chatMessage= new ChatMessage(mMessageEditText.getText().toString(),mUserName,mPhotoUrl,null);
+            ChatMessage chatMessage= new ChatMessage(mMessageEditText.getText().toString(),mUserName,mPhotoUrl,null,NOWDATE);
             mFirebaseDatabaseReference.child(MESSAGES_CHILD)
                     .push().setValue(chatMessage);
             mMessageEditText.setText("");
@@ -130,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             protected void onBindViewHolder(MessageViewHolder holder,int position, ChatMessage model) {
                 holder.tvName.setText(model.getText());
                 holder.tvMessage.setText(model.getName());
+                holder.tvDate.setText(model.getDate());
                 if(model.getPhotourl() ==null ){
                     holder.Profile.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,R.drawable.ic_action_name));
                 }else{
@@ -139,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             .error(R.drawable.ic_action_name)
                             .into(holder.Profile);
                 }
+
 
             }
 
@@ -153,6 +170,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         };
         ChatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         ChatRecyclerView.setAdapter(mFirebaseAdapter);
+
+
 
 
 

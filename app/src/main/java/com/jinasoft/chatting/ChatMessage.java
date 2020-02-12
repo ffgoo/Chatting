@@ -6,18 +6,20 @@ public class ChatMessage {
     private String name;
     private String photourl;
     private String imageurl;
+    private String date;
 
 
     public ChatMessage() {
 
     }
 
-    public ChatMessage(String text, String name, String photourl,String imageurl){
+    public ChatMessage(String text, String name, String photourl,String imageurl,String date){
         this.text = text;
 
         this.name = name;
         this.photourl=photourl;
         this.imageurl = imageurl;
+        this.date = date;
 
     }
 
@@ -38,7 +40,9 @@ public class ChatMessage {
     public void setImageurl(String imageurl){
         this.imageurl=imageurl;
     }
-
+    public void setDate(String date){
+        this.date = date;
+    }
 
 
     public String getId(){
@@ -56,7 +60,9 @@ public class ChatMessage {
     public  String getImageurl(){
         return imageurl;
     }
-
+    public String getDate(){
+        return date;
+    }
 
 
 }
