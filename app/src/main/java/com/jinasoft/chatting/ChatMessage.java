@@ -1,32 +1,37 @@
 package com.jinasoft.chatting;
 
 public class ChatMessage {
-    private String id;
+    private String email;
     private String text;
     private String name;
     private String photourl;
     private String imageurl;
     private String date;
 
+    private int viewType;
+
 
     public ChatMessage() {
 
     }
 
-    public ChatMessage(String text, String name, String photourl,String imageurl,String date){
+    public ChatMessage(String text,String email, String name, String photourl,String imageurl,String date){
         this.text = text;
 
+        this.email = email;
         this.name = name;
         this.photourl=photourl;
         this.imageurl = imageurl;
         this.date = date;
 
+        this.viewType = viewType;
+
     }
 
 
 
-    public void setId(String id){
-        this.id=id;
+    public void setEmail(String id){
+        this.email=email;
     }
     public void setText(String text){
         this.text=text;
@@ -45,8 +50,8 @@ public class ChatMessage {
     }
 
 
-    public String getId(){
-        return id;
+    public String getEmail(){
+        return email;
     }
     public  String getText(){
         return text;
@@ -62,6 +67,9 @@ public class ChatMessage {
     }
     public String getDate(){
         return date;
+    }
+    public int getviewType() {
+        return viewType;
     }
 
 

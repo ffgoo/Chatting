@@ -29,7 +29,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/chat_tvMessage"
+                android:id="@+id/chat_tvName"
                 android:text="사용자 이름"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#000000"
@@ -52,7 +52,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/chat_tvName"
+                android:id="@+id/chat_tvMessage"
                 android:text="메세지"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#000000"

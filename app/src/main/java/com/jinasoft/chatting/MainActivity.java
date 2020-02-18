@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,8 +31,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -47,7 +44,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     SimpleDateFormat sdfNOW = new SimpleDateFormat("HH:mm");
     private String NOWDATE = sdfNOW.format(date);
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+
+    String ViewTypeNAME;
+
+    public static class MessageViewHolder extends RecyclerView.ViewHolder{
 
 
         TextView tvName;
@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
         }
+
+
     }
 
 
@@ -126,13 +128,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     findViewById(R.id.chat_btnsend).setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View view){
-            ChatMessage chatMessage= new ChatMessage(mMessageEditText.getText().toString(),mUserName,mPhotoUrl,null,NOWDATE);
+            ChatMessage chatMessage= new ChatMessage(mMessageEditText.getText().toString(),"email",mUserName,mPhotoUrl,null,NOWDATE);
             mFirebaseDatabaseReference.child(MESSAGES_CHILD)
                     .push().setValue(chatMessage);
             mMessageEditText.setText("");
         }
     });
+/**----- 전송**/
 
+/**----- 읽기**/
         Query query = mFirebaseDatabaseReference.child(MESSAGES_CHILD);
 
         FirebaseRecyclerOptions<ChatMessage> options =
@@ -142,31 +146,65 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<ChatMessage, MessageViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(MessageViewHolder holder,int position, ChatMessage model) {
-                holder.tvName.setText(model.getText());
-                holder.tvMessage.setText(model.getName());
+            protected void onBindViewHolder(MessageViewHolder holder, int position, ChatMessage model) {
+                holder.tvName.setText(model.getName());
+                holder.tvMessage.setText(model.getText());
                 holder.tvDate.setText(model.getDate());
-                if(model.getPhotourl() ==null ){
-                    holder.Profile.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,R.drawable.ic_action_name));
-                }else{
-                    Glide.with(MainActivity.this)
-                            .load(model.getPhotourl())
+
+                ViewTypeNAME = model.getPhotourl();
+
+                if(model.getName().equals("2번")) {
+
+                }else {
+                        if (model.getPhotourl().equals("")) {
+                            holder.Profile.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_action_name));
+
+
+                        } else {
+                       /**이메일이 내 이메일 이면 프로필 x**/
+                            Glide.with(MainActivity.this)
+                                .load(model.getPhotourl())
 //                            .override(10)
-                            .error(R.drawable.ic_action_name)
-                            .into(holder.Profile);
+                                .error(R.drawable.button_back_google)
+                                .into(holder.Profile);
+
+
+                    }
                 }
 
-
             }
-
-            @NonNull
             @Override
-            public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_image,parent,false);
-                return new MessageViewHolder(view);
+            public int getItemViewType(int position) {
+                ChatMessage model = getItem(position);
+                if (model.getName().equals("2번")) {
+                    return 1;
+                } else {
+                    return 2;
+                    }
 
-            }
+                }
+                    @NonNull
+                    @Override
+                    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+                        View view;
+                                switch (viewType) {
+                                    case 0:
+                                     Log.d("FFFF", "온크리트뷰홀더 :" + viewType);
+                                     Log.d("FFFF", "온크리트뷰홀더 : 0인 경우");
+                                      view = LayoutInflater.from(viewGroup.getContext())
+                                             .inflate(R.layout.item_image, viewGroup, false);
+                            return new MessageViewHolder(view);
+                                    case 1:
+                                        Log.d("FFFF", "온크리트뷰홀더 :" + viewType);
+                                        Log.d("FFFF", "온크리트뷰홀더 : 1인 경우");
+                                        view = LayoutInflater.from(viewGroup.getContext())
+                                                .inflate(R.layout.item_image2, viewGroup, false);
+                            return new MessageViewHolder(view);
+                    }
+                    view = LayoutInflater.from(viewGroup.getContext())
+                            .inflate(R.layout.item_image, viewGroup, false);
+                    return new MessageViewHolder(view);
+                }
         };
         ChatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         ChatRecyclerView.setAdapter(mFirebaseAdapter);
@@ -209,7 +247,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         onStart();
         onStop();
     }
-
 @Override
 public void onStart(){
         super.onStart();
@@ -225,6 +262,7 @@ public void onStop(){
         getMenuInflater().inflate(R.menu.main,menu);
         return true;
     }
+
     public boolean onOptionItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.sign_out_menu:
@@ -234,17 +272,15 @@ public void onStop(){
                 startActivity(new Intent(this, SignActivity.class));
                 finish();
                 return true;
-                default:return super.onOptionsItemSelected(item);
+                default:
+                    return super.onOptionsItemSelected(item);
         }
     }
-
-
-
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult){
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this,"Google play Service error",Toast.LENGTH_SHORT).show();
-    }
 
+    }
 
 
 }
